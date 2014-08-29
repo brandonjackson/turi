@@ -103,16 +103,16 @@
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
         <script src="js/bootstrap.js"></script>
-
+        <script src="lib/menubar.js"></script>
         <script>
 
-        var gui = require('nw.gui');
-
-        var fs = require('fs');
-        var path = require('path')
-        var parseString = require('xml2js').parseString;
-        var AIML = require('./AIML.js');
-        var _ = require("underscore");
+        // Load Modules
+        var gui = require('nw.gui'),
+            fs = require('fs'),
+            path = require('path'),
+            parseString = require('xml2js').parseString,
+            AIML = require('./lib/AIML.js'),
+            _ = require("underscore");
 
         var args = gui.App.argv;
         var filePath = path.resolve(gui.App.argv[0]);
