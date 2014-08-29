@@ -1,3 +1,17 @@
+#splash{
+	text-align: center;
+}
+#splash h1{
+	font-size: 48px;
+}
+#splash h2{
+	font-weight: 100;
+	margin-top: 50px;
+}
+#splash .buttons{
+	margin-top: 50px;
+}
+
 th#pattern-heading{
 	width: 45%;
 }

@@ -25,20 +25,22 @@
 
         <!-- Add your site or application content here -->
 
-        <div class="container">
+        <div class="container" id="splash" style="display:none;">
 
-            <h1>Turi</h1>
+            <h1>Turi.</h1>
 
-            <a href="wizard.html" class="btn btn-default">
-                <span class="glyphicon glyphicon-plus"></span>
-                New Bot
-            </a>
-            <a href="edit.html" class="btn btn-default">
-                <span class="glyphicon glyphicon-pencil"></span>
-                Edit Bot
-            </a>
+            <h2>Create your own chatterbot. Construct its Brain. Learn about the nature of intelligence.</h2>
 
-
+            <div class="buttons">
+                <a href="wizard.html" class="btn btn-default btn-lg">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    New Bot
+                </a>
+                <a href="edit.html" class="btn btn-default btn-lg">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    Edit Bot
+                </a>
+            </div>
         </div>
 
 
@@ -49,6 +51,17 @@
         <script src="js/bootstrap.js"></script>
         <script>
 
+            $(function(){
+                $(window).resize(setSplashMargin);
+                setSplashMargin();
+                $("#splash").fadeIn();
+            })
+            
+            function setSplashMargin(){
+                height = $(window).height();
+                topMargin = (height - 320) / 2;
+                $("#splash").css("margin-top",topMargin);
+            }
        
 
         </script>  
