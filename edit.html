@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/style.css">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+
+        <div class="container">
+
+            <h1>AIML Editor</h1>
+
+            <table id="rulesTable" class="table table-striped">
+                <thead>
+                    <th id="pattern-heading">Pattern</th>
+                    <th id="response-heading">Response</th>
+                    <th id="toolbox-heading"></th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <!-- Button trigger modal -->
+            <div class="bottom-toolbar clearfix">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addNewRuleModal" id="addNewRuleButton">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span class="button-text">Add New Rule</span>
+                </button>
+                <button class="btn btn-success" id="saveButton">
+                  <span class="glyphicon glyphicon-save"></span>
+                  <span class="button-text">Save File</span>
+                </button>
+            </div>
+
+
+            <div id="debug">
+                <hr />
+
+                <h2>AIML File Path:</h2>
+                <pre id="path"></pre>
+                <h2>XML:</h2>
+                <pre id="xml"></pre>
+                <h2>JSON:</h2>
+                <pre id="json"></pre>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addNewRuleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add New Rule</h4>
+              </div>
+              <div class="modal-body">
+                <form role="form" class="form-horizontal">
+                  <div class="form-group">
+                    <label for="addNewRulePattern" class="col-sm-2">Pattern</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="addNewRulePattern" placeholder="e.g. *">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="addNewRuleResponse" class="col-sm-2">Response</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="addNewRuleResponse" placeholder="e.g. Hello there!">
+                    </div>
+                  </div>
+                </form>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addNewRuleSubmit">Add Rule</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/bootstrap.js"></script>
+
+        <script>
+
+        var gui = require('nw.gui');
+
+        var fs = require('fs');
+        var path = require('path')
+        var parseString = require('xml2js').parseString;
+        var AIML = require('./AIML.js');
+        var _ = require("underscore");
+
+        var args = gui.App.argv;
+        var filePath = path.resolve(gui.App.argv[0]);
+
+        $("#path").text(filePath);
+
+        fs.readFile(filePath, 'utf8', function (err,data) {
+            if (err) {
+                return console.log(err);
+            }
+            //console.log(data);
+            $("#xml").text(data);
+
+            parseString(data, function (err, result) {
+                //console.dir(result);
+                $("#json").text(JSON.stringify(result))
+                model = AIML(result);
+                rules = model.getRules();
+                updateTable(rules);
+                //console.log(rules);
+            });
+
+        });
+
+        function updateTable(data){
+            $("#rulesTable > tbody").html("");
+            _.each(data,function(val,key){
+                drawRow(val)
+            });
+        }
+
+        function drawRow(rowData) {
+            var row = $("<tr />")
+            $("#rulesTable").append(row);
+            row.append($("<td contenteditable=true class='pattern'>" + rowData.pattern + "</td>"));
+            row.append($("<td contenteditable=true class='response'>" + rowData.response + "</td>"));
+            row.append($("<td><button class='deleteButton btn btn-danger btn-xs'>Delete</button>"))
+        }
+        
+        $("#rulesTable tbody").on("keypress","td[contenteditable=true]",function(e) {
+            if(e.which==13){
+                $(this).blur()
+            }
+            return (e.which != 13);
+        });
+
+        $("#rulesTable tbody").on("blur","td[contenteditable=true]",function(e) {
+            var value = $(this).text();
+            console.log("New Value: "+value);
+        });
+
+        function resetAddNewRuleForm(){
+            $("input#addNewRulePattern").val("");
+            $("input#addNewRuleResponse").val("");
+        }
+
+        $("#addNewRuleSubmit").on("click",function(e){
+            $("#addNewRuleModal").modal("hide");
+            var newRule = {
+                pattern: $("input#addNewRulePattern").val(),
+                response: $("input#addNewRuleResponse").val()
+            };
+            resetAddNewRuleForm();
+            console.log("new rule:"+JSON.stringify(newRule));
+            drawRow(newRule);
+        });
+
+        $("#rulesTable tbody").on("click","button.deleteButton", function(e){
+            var td = $(this).parent();
+            var tr = td.parent();
+            tr.remove();
+        });
+
+        function getDataFromTable(){
+            var data = [];
+            $('#rulesTable tbody tr').each(function() {
+                data.push({
+                    pattern: $(this).find(".pattern").text(),
+                    response: $(this).find(".response").text()
+                });
+             });
+            return data;
+        }
+
+        $("#saveButton").on("click",function(e){
+            console.log(JSON.stringify(getDataFromTable()));
+            onSaving();
+        });
+
+        function onSaving(){
+            $("#saveButton .button-text").text("Saving...");
+            $("#saveButton").addClass("disabled");
+        }
+
+        function saved(){
+            $("#saveButton .glyphicon").removeClass("glyphicon-save");
+            $("#saveButton .glyphicon").addClass("glyphicon-saved");
+            $("#saveButton .button-text").text("Saved");
+            $("#saveButton").removeClass("disabled");
+        }
+
+        </script>  
+
+    </body>
+</html>

@@ -1,0 +1,32 @@
+th#pattern-heading{
+	width: 45%;
+}
+th#response-heading{
+	width: 45%;
+}
+th#toolbox-heading{
+	width: 10%;
+}
+
+table#rulesTable tr td button.deleteButton{
+	display: none;
+	float: right;
+}
+table#rulesTable tr:hover td button.deleteButton{
+	display: block;
+	font-size: 10px;
+}
+
+button#addNewRuleButton{
+	float: left;
+}
+button#saveButton{
+	float: right;
+}
+.bottom-toolbar{
+	
+}
+
+#debug{
+	display: none;
+}

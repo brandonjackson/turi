@@ -1,0 +1,15 @@
+{
+  "name": "turi",
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "width": 800,
+    "height": 600
+  },
+  "dependencies": {
+    "xml2js": ">= 0",
+    "path": ">= 0",
+    "q":">=0",
+    "underscore":">=0"
+  }
+}
